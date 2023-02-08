@@ -256,6 +256,11 @@ class RawEditorState extends EditorState
   ScrollController get scrollController => _scrollController;
   late ScrollController _scrollController;
 
+  void insertTextPlaceholder(Size size) {}
+
+  /// Requests that the client remove the text placeholder.
+  void removeTextPlaceholder() {}
+
   // Cursors
   late CursorCont _cursorCont;
 
