@@ -1,12 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../models/themes/quill_icon_theme.dart';
 import '../controller.dart';
 import '../toolbar.dart';
-import 'image_video_utils.dart';
-import 'quill_icon_button.dart';
 
 class CameraButton extends StatelessWidget {
   const CameraButton({
@@ -56,6 +53,7 @@ class CameraButton extends StatelessWidget {
       hoverElevation: 0,
       size: iconSize * 1.77,
       fillColor: iconFillColor,
+      borderRadius: iconTheme?.borderRadius ?? 2,
       onPressed: () => _handleCameraButtonTap(context, controller,
           onImagePickCallback: onImagePickCallback,
           onVideoPickCallback: onVideoPickCallback,

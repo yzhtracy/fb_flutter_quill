@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../flutter_quill.dart';
-import 'quill_icon_button.dart';
 
 class ClearFormatButton extends StatefulWidget {
   const ClearFormatButton({
@@ -37,6 +36,7 @@ class _ClearFormatButtonState extends State<ClearFormatButton> {
         size: widget.iconSize * kIconButtonFactor,
         icon: Icon(widget.icon, size: widget.iconSize, color: iconColor),
         fillColor: fillColor,
+        borderRadius: widget.iconTheme?.borderRadius ?? 2,
         onPressed: () {
           final attrs = <Attribute>{};
           for (final style in widget.controller.getAllSelectionStyles()) {

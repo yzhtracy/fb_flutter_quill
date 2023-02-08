@@ -34,8 +34,7 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
   void initState() {
     super.initState();
     setState(() {
-      _value =
-          _selectionStyle.attributes[Attribute.header.key] ?? Attribute.header;
+      _value = _getHeaderValue();
     });
     widget.controller.addListener(_didChangeEditingValue);
   }
@@ -67,7 +66,8 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(4, (index) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: !kIsWeb ? 1.0 : 5.0),
+          // ignore: prefer_const_constructors
+          padding: EdgeInsets.symmetric(horizontal: !kIsWeb ? 1.0 : 5.0),
           child: ConstrainedBox(
             constraints: BoxConstraints.tightFor(
               width: widget.iconSize * kIconButtonFactor,
@@ -79,7 +79,8 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
               elevation: 0,
               visualDensity: VisualDensity.compact,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(2)),
+                  borderRadius: BorderRadius.circular(
+                      widget.iconTheme?.borderRadius ?? 2)),
               fillColor: _valueToText[_value] == _valueString[index]
                   ? (widget.iconTheme?.iconSelectedFillColor ??
                       theme.toggleableActiveColor)
@@ -106,9 +107,18 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
 
   void _didChangeEditingValue() {
     setState(() {
-      _value =
-          _selectionStyle.attributes[Attribute.header.key] ?? Attribute.header;
+      _value = _getHeaderValue();
     });
+  }
+
+  Attribute<dynamic> _getHeaderValue() {
+    final attr = widget.controller.toolbarButtonToggler[Attribute.header.key];
+    if (attr != null) {
+      // checkbox tapping causes controller.selection to go to offset 0
+      widget.controller.toolbarButtonToggler.remove(Attribute.header.key);
+      return attr;
+    }
+    return _selectionStyle.attributes[Attribute.header.key] ?? Attribute.header;
   }
 
   @override
@@ -117,8 +127,7 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_didChangeEditingValue);
       widget.controller.addListener(_didChangeEditingValue);
-      _value =
-          _selectionStyle.attributes[Attribute.header.key] ?? Attribute.header;
+      _value = _getHeaderValue();
     }
   }
 

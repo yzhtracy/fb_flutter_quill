@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../flutter_quill.dart';
-import 'quill_icon_button.dart';
 
 class HistoryButton extends StatefulWidget {
   const HistoryButton({
@@ -43,6 +42,7 @@ class _HistoryButtonState extends State<HistoryButton> {
       size: widget.iconSize * 1.77,
       icon: Icon(widget.icon, size: widget.iconSize, color: _iconColor),
       fillColor: fillColor,
+      borderRadius: widget.iconTheme?.borderRadius ?? 2,
       onPressed: _changeHistory,
     );
   }

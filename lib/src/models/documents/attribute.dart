@@ -12,6 +12,7 @@ enum AttributeScope {
 class Attribute<T> {
   Attribute(this.key, this.scope, this.value);
 
+  /// Unique key of this attribute.
   final String key;
   final AttributeScope scope;
   final T value;
@@ -41,6 +42,7 @@ class Attribute<T> {
     Attribute.placeholder.key: Attribute.placeholder,
     Attribute.header.key: Attribute.header,
     Attribute.align.key: Attribute.align,
+    Attribute.direction.key: Attribute.direction,
     Attribute.list.key: Attribute.list,
     Attribute.codeBlock.key: Attribute.codeBlock,
     Attribute.blockQuote.key: Attribute.blockQuote,
@@ -90,6 +92,8 @@ class Attribute<T> {
 
   static final BlockQuoteAttribute blockQuote = BlockQuoteAttribute();
 
+  static final DirectionAttribute direction = DirectionAttribute(null);
+
   static final WidthAttribute width = WidthAttribute(null);
 
   static final HeightAttribute height = HeightAttribute(null);
@@ -104,6 +108,14 @@ class Attribute<T> {
   static final AtAttribute at = AtAttribute(null);
 
   static final ChannelAttribute channel = ChannelAttribute(null);
+  
+  static const String mobileWidth = 'mobileWidth';
+
+  static const String mobileHeight = 'mobileHeight';
+
+  static const String mobileMargin = 'mobileMargin';
+
+  static const String mobileAlignment = 'mobileAlignment';
 
   static final Set<String> inlineKeys = {
     Attribute.bold.key,
@@ -126,6 +138,7 @@ class Attribute<T> {
     Attribute.codeBlock.key,
     Attribute.blockQuote.key,
     Attribute.indent.key,
+    Attribute.direction.key,
   });
 
   static final Set<String> blockKeysExceptHeader = LinkedHashSet.of({
@@ -134,6 +147,7 @@ class Attribute<T> {
     Attribute.codeBlock.key,
     Attribute.blockQuote.key,
     Attribute.indent.key,
+    Attribute.direction.key,
   });
 
   static final Set<String> exclusiveBlockKeys = LinkedHashSet.of({
@@ -172,6 +186,9 @@ class Attribute<T> {
 
   // "attributes":{"list":"unchecked"}
   static Attribute<String?> get unchecked => ListAttribute('unchecked');
+
+  // "attributes":{"direction":"rtl"}
+  static Attribute<String?> get rtl => DirectionAttribute('rtl');
 
   // "attributes":{"indent":1"}
   static Attribute<int?> get indentL1 => IndentAttribute(level: 1);
@@ -317,6 +334,11 @@ class CodeBlockAttribute extends Attribute<bool> {
 
 class BlockQuoteAttribute extends Attribute<bool> {
   BlockQuoteAttribute() : super('blockquote', AttributeScope.BLOCK, true);
+}
+
+class DirectionAttribute extends Attribute<String?> {
+  DirectionAttribute(String? val)
+      : super('direction', AttributeScope.BLOCK, val);
 }
 
 class WidthAttribute extends Attribute<String?> {
