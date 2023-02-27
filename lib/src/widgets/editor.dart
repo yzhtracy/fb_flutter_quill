@@ -151,6 +151,10 @@ class QuillEditor extends StatefulWidget {
       required this.expands,
       this.isSelectionInViewport,
       this.caretOffset = 0,
+      this.cursorOffset,
+      this.cursorHeight,
+      this.cursorWidth,
+      this.cursorRadius,
       this.showCursor,
       this.paintCursorAboveText,
       this.placeholder,
@@ -368,8 +372,12 @@ class QuillEditor extends StatefulWidget {
   final bool floatingCursorDisabled;
 
   final IsSelectionInViewport? isSelectionInViewport;
-  
-  final double caretOffset; 
+
+  final double caretOffset;
+  final Offset? cursorOffset;
+  final double? cursorHeight;
+  final Radius? cursorRadius;
+  final double? cursorWidth;
 
   /// allows to create a custom textSelectionControls,
   /// if this is null a default textSelectionControls based on the app's theme
@@ -401,10 +409,10 @@ class QuillEditorState extends State<QuillEditor>
     TextSelectionControls textSelectionControls;
     bool paintCursorAboveText;
     bool cursorOpacityAnimates;
-    Offset? cursorOffset;
+    Offset? cursorOffset = widget.cursorOffset;
     Color? cursorColor;
     Color selectionColor;
-    Radius? cursorRadius;
+    Radius? cursorRadius = widget.cursorRadius;
 
     if (isAppleOS(theme.platform)) {
       final cupertinoTheme = CupertinoTheme.of(context);
@@ -415,7 +423,7 @@ class QuillEditorState extends State<QuillEditor>
       selectionColor = selectionTheme.selectionColor ??
           cupertinoTheme.primaryColor.withOpacity(0.40);
       cursorRadius ??= const Radius.circular(2);
-      cursorOffset = Offset(
+      cursorOffset ??= Offset(
           iOSHorizontalOffset / MediaQuery.of(context).devicePixelRatio, 0);
     } else {
       textSelectionControls = materialTextSelectionControls;
@@ -448,7 +456,8 @@ class QuillEditorState extends State<QuillEditor>
       cursorStyle: CursorStyle(
         color: cursorColor,
         backgroundColor: Colors.grey,
-        width: 2,
+        width: widget.cursorWidth ?? 2,
+        height: widget.cursorHeight,
         radius: cursorRadius,
         offset: cursorOffset,
         paintAboveText: widget.paintCursorAboveText ?? paintCursorAboveText,
@@ -719,7 +728,8 @@ const EdgeInsets _kFloatingCursorAddedMargin = EdgeInsets.fromLTRB(4, 4, 4, 5);
 const EdgeInsets _kFloatingCaretSizeIncrease =
     EdgeInsets.symmetric(horizontal: 0.5, vertical: 1);
 
-typedef IsSelectionInViewport = List<bool> Function(double selectionStart, double selectionEnd);
+typedef IsSelectionInViewport = List<bool> Function(
+    double selectionStart, double selectionEnd);
 
 /// Displays a document as a vertical list of document segments (lines
 /// and blocks).
@@ -789,28 +799,28 @@ class RenderEditor extends RenderEditableContainerBox
 
   void _updateSelectionExtentsVisibility(Offset effectiveOffset) {
     // 修改，添加isSelectionInViewport!=null的逻辑
-    if(isSelectionInViewport!=null) {
-      final renderBox = (key.currentContext!.findRenderObject()!) as RenderBox ;
+    if (isSelectionInViewport != null) {
+      final renderBox = (key.currentContext!.findRenderObject()!) as RenderBox;
       final edotirOffset = renderBox.localToGlobal(Offset.zero);
 
       final startPosition =
-      TextPosition(offset: selection.start, affinity: selection.affinity);
+          TextPosition(offset: selection.start, affinity: selection.affinity);
       final startOffset = _getOffsetForCaret(startPosition);
       final startPositionY = edotirOffset.dy + startOffset.dy;
 
       final endPosition =
-      TextPosition(offset: selection.end, affinity: selection.affinity);
+          TextPosition(offset: selection.end, affinity: selection.affinity);
       final endOffset = _getOffsetForCaret(endPosition);
       final endPositionY = edotirOffset.dy + endOffset.dy;
 
-      final List<bool> res = isSelectionInViewport!.call(startPositionY,endPositionY);
+      final List<bool> res =
+          isSelectionInViewport!.call(startPositionY, endPositionY);
       _selectionStartInViewport.value = res[0];
       _selectionEndInViewport.value = res[1];
-
     } else {
       final visibleRegion = Offset.zero & size;
       final startPosition =
-      TextPosition(offset: selection.start, affinity: selection.affinity);
+          TextPosition(offset: selection.start, affinity: selection.affinity);
       final startOffset = _getOffsetForCaret(startPosition);
       // TODO(justinmc): https://github.com/flutter/flutter/issues/31495
       // Check if the selection is visible with an approximation because a
@@ -825,7 +835,7 @@ class RenderEditor extends RenderEditableContainerBox
           .contains(startOffset + effectiveOffset);
 
       final endPosition =
-      TextPosition(offset: selection.end, affinity: selection.affinity);
+          TextPosition(offset: selection.end, affinity: selection.affinity);
       final endOffset = _getOffsetForCaret(endPosition);
       _selectionEndInViewport.value = visibleRegion
           .inflate(visibleRegionSlop)
